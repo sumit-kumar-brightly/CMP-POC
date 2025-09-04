@@ -57,6 +57,7 @@ data class MovieListUiState(
     val error: String? = null,
     val currentPage: Int = 1,
     val isEndReached: Boolean = false,
+    val maxPages: Int = Int.MAX_VALUE,
     val isOffline: Boolean = false, // NEW: Track offline state
     val isUsingCache: Boolean = false, // NEW: Indicate when showing cached data
     val networkConnection: NetworkConnection? = null

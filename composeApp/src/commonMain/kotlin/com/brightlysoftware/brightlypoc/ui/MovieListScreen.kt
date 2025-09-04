@@ -25,7 +25,6 @@ fun MovieListScreen(
 ) {
     val state = viewModel.state
     val listState = rememberLazyListState()
-
     // Handle pagination when user scrolls to the end
     LaunchedEffect(listState, state.movies.size) {  // Add state.movies.size as dependency
         snapshotFlow {
@@ -44,7 +43,6 @@ fun MovieListScreen(
 
                 println("DEBUG TRIGGER CHECK: lastVisible=$lastVisibleIndex, totalItems=$totalItems, moviesCount=$currentMoviesCount")
                 println("DEBUG CONDITIONS: isLoadingMore=${state.isLoadingMore}, isEndReached=${state.isEndReached}, error=${state.error}")
-
                 // Check if we should load more
                 val shouldLoadMore = lastVisibleIndex >= totalItems - 3 &&
                         totalItems > 0 &&

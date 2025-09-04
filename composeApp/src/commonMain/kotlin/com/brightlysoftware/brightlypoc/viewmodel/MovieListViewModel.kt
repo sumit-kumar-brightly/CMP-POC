@@ -13,10 +13,11 @@ import kotlinx.coroutines.launch
 
 class MovieListViewModel(
     private val repository: MovieRepository,
-    private val connectivityService: NetworkConnectivityService
+    private val connectivityService: NetworkConnectivityService,
+    private val maxPages: Int
 ) : ViewModel() {
 
-    var state by mutableStateOf(MovieListUiState())
+    var state by mutableStateOf(MovieListUiState(maxPages = maxPages))
         private set
     private val paginator = Paginator(
         initialKey = 1,
@@ -45,7 +46,7 @@ class MovieListViewModel(
                     state.movies + movies // Append for subsequent pages
                 },
                 currentPage = newPage,
-                isEndReached = movies.isEmpty() || isOffline, // End pagination if offline
+                isEndReached = movies.isEmpty() || isOffline || newPage > state.maxPages, // End pagination if offline
                 error = null,
                 isLoadingMore = false,
                 isOffline = isOffline,
@@ -80,9 +81,9 @@ class MovieListViewModel(
 //                }
 //        }
 //    }
-
     fun loadNextMovies() {
-        if (!state.isLoadingMore && !state.isEndReached && !state.isOffline) {
+        if (!state.isLoadingMore && !state.isEndReached && !state.isOffline &&
+            state.currentPage <= state.maxPages) {
             viewModelScope.launch {
                 paginator.loadNextItems()
             }
