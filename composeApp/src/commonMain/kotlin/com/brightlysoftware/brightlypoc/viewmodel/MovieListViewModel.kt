@@ -13,11 +13,10 @@ import kotlinx.coroutines.launch
 
 class MovieListViewModel(
     private val repository: MovieRepository,
-    private val connectivityService: NetworkConnectivityService,
-    private val maxPages: Int
+    private val connectivityService: NetworkConnectivityService
 ) : ViewModel() {
 
-    var state by mutableStateOf(MovieListUiState(maxPages = maxPages))
+    var state by mutableStateOf(MovieListUiState())
         private set
     private val paginator = Paginator(
         initialKey = 1,
@@ -44,10 +43,10 @@ class MovieListViewModel(
                     movies // First page - replace
                 } else {
                     val existingIds = state.movies.map { it.id }.toSet()
-                    state.movies + movies.filterNot { it.id in existingIds } // Append for subsequent pages
+                    state.movies + movies.filterNot { it.id in existingIds }// Append for subsequent pages
                 },
                 currentPage = newPage,
-                isEndReached = movies.isEmpty() || isOffline || newPage > state.maxPages, // End pagination if offline
+                isEndReached = movies.isEmpty() || isOffline, // End pagination if offline
                 error = null,
                 isLoadingMore = false,
                 isOffline = isOffline,
@@ -63,7 +62,7 @@ class MovieListViewModel(
                 .collect { networkConnection ->
                     val isOffline = (networkConnection == null)
                     state = state.copy(isOffline = isOffline, networkConnection = networkConnection)
-                    if (!isOffline && state.movies.isEmpty()) {
+                    if ( state.movies.isEmpty()) {
                         loadInitialMovies()
                     }
                 }
@@ -83,8 +82,7 @@ class MovieListViewModel(
 //        }
 //    }
     fun loadNextMovies() {
-        if (!state.isLoadingMore && !state.isEndReached && !state.isOffline &&
-            state.currentPage <= state.maxPages) {
+        if (!state.isLoadingMore && !state.isEndReached && !state.isOffline) {
             viewModelScope.launch {
                 paginator.loadNextItems()
             }

@@ -52,7 +52,7 @@ val repositoryModule = module {
 }
 
 val viewModelModule = module {
-    viewModel { MovieListViewModel(get(), get(), maxPages = 5) }
+    viewModel { MovieListViewModel(get(), get()) }
     viewModel { ImageDownloadViewModel(get()) }
 }
 

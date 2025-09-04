@@ -21,6 +21,9 @@ class MovieRepositoryImpl(
 ) : MovieRepository {
 
     override suspend fun getPopularMovies(page: Int): Result<MovieResponse> {
+        if (page > MovieResponse.MAX_PAGES) {
+            return Result.success(MovieResponse(page, emptyList(), page, 0)) // Return empty to signal end
+        }
         val isConnected = connectivityService.isCurrentlyConnected()
 
         return if (isConnected) {

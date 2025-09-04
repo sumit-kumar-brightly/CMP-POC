@@ -12,7 +12,14 @@ data class MovieResponse(
     val totalPages: Int,
     @SerialName("total_results")
     val totalResults: Int
-)
+){
+    companion object {
+        const val MAX_PAGES = 3// Your limit
+    }
+
+    val hasReachedLimit: Boolean
+        get() = page >= MAX_PAGES || page >= totalPages
+}
 
 @Serializable
 data class Movie(
@@ -57,7 +64,6 @@ data class MovieListUiState(
     val error: String? = null,
     val currentPage: Int = 1,
     val isEndReached: Boolean = false,
-    val maxPages: Int = Int.MAX_VALUE,
     val isOffline: Boolean = false, // NEW: Track offline state
     val isUsingCache: Boolean = false, // NEW: Indicate when showing cached data
     val networkConnection: NetworkConnection? = null
