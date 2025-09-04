@@ -133,7 +133,7 @@ private fun MovieList(
     ) {
         items(
             items = movies,
-            key = { movie -> "${movie.id}_${movies.indexOf(movie)}" }
+            key = { movie -> "${movie.id}" }
         ) { movie ->
             MovieItem(movie = movie)
         }

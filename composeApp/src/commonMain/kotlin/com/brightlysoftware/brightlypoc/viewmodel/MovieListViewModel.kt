@@ -43,7 +43,8 @@ class MovieListViewModel(
                 movies = if (state.currentPage == 1) {
                     movies // First page - replace
                 } else {
-                    state.movies + movies // Append for subsequent pages
+                    val existingIds = state.movies.map { it.id }.toSet()
+                    state.movies + movies.filterNot { it.id in existingIds } // Append for subsequent pages
                 },
                 currentPage = newPage,
                 isEndReached = movies.isEmpty() || isOffline || newPage > state.maxPages, // End pagination if offline
