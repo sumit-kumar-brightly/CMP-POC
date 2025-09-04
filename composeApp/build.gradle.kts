@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.serialization)
+    alias(libs.plugins.sqldelight)
 }
 
 kotlin {
@@ -36,11 +37,11 @@ kotlin {
             implementation(libs.ktor.client.android)
             implementation(libs.koin.android)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.sqldelight.android.driver)
+
 //            implementation(libs.androidx.core.splashscreen)
         }
         commonMain.dependencies {
-//            implementation("io.coil-kt.coil3:coil-compose:3.0.4")
-//            implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.4")
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
@@ -63,10 +64,6 @@ kotlin {
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor)
 
-            // Paging
-//            implementation(libs.paging.common)
-//            implementation(libs.paging.compose)
-
             // Dependency Injection
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
@@ -74,16 +71,27 @@ kotlin {
 
             // Others
             implementation(libs.kotlinx.coroutines.core)
-
-
+            implementation(libs.sqldelight.runtime)
+            implementation(libs.sqldelight.coroutines)
+            implementation(libs.multiplatform.settings)
+            implementation(libs.konnection)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
+            implementation(libs.sqldelight.native.driver)
         }
 
+    }
+}
+
+sqldelight {
+    databases {
+        register("MovieDatabase") {
+            packageName.set("com.brightlysoftware.brightlypoc.database")
+        }
     }
 }
 

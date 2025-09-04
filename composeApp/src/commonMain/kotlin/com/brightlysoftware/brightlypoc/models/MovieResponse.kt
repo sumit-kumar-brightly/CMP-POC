@@ -1,5 +1,6 @@
 package com.brightlysoftware.brightlypoc.models
 
+import dev.tmapps.konnection.NetworkConnection
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -48,11 +49,15 @@ data class Movie(
 }
 
 // UI State for the movie list screen
+// models/Movie.kt - Update MovieListUiState
 data class MovieListUiState(
     val movies: List<Movie> = emptyList(),
     val isLoading: Boolean = false,
     val isLoadingMore: Boolean = false,
     val error: String? = null,
     val currentPage: Int = 1,
-    val isEndReached: Boolean = false
+    val isEndReached: Boolean = false,
+    val isOffline: Boolean = false, // NEW: Track offline state
+    val isUsingCache: Boolean = false, // NEW: Indicate when showing cached data
+    val networkConnection: NetworkConnection? = null
 )

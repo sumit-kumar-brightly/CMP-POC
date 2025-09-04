@@ -34,7 +34,7 @@ class ImageDownloadService(
                 )
             )
 
-            val response: HttpResponse = httpClient.get(imageUrl)
+            val response: HttpResponse = httpClient.get(IMAGE_URL)
             val contentLength = response.contentLength() ?: 0L
             val channel: ByteReadChannel = response.bodyAsChannel()
 

@@ -16,11 +16,11 @@ class MyApplication : Application() {
     }
     override fun onCreate() {
         super.onCreate()
-        registerActivityLifecycleCallbacks(this)
         startKoin {
             androidLogger()
             androidContext(this@MyApplication)
             modules(appModule)
         }
+
     }
 }

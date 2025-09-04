@@ -1,9 +1,11 @@
+
 package com.brightlysoftware.brightlypoc.di
 
 import com.brightlysoftware.brightlypoc.remote.ImageDownloadService
 import com.brightlysoftware.brightlypoc.remote.MovieApi
 import com.brightlysoftware.brightlypoc.repository.MovieRepository
 import com.brightlysoftware.brightlypoc.repository.MovieRepositoryImpl
+import com.brightlysoftware.brightlypoc.util.NetworkConnectivityService
 import com.brightlysoftware.brightlypoc.viewmodel.ImageDownloadViewModel
 import com.brightlysoftware.brightlypoc.viewmodel.MovieListViewModel
 import io.ktor.client.*
@@ -16,6 +18,11 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 expect fun platformModule(): Module
+
+// Connectivity module
+val connectivityModule = module {
+    single { NetworkConnectivityService() }
+}
 
 val networkModule = module {
     single<HttpClient> {
@@ -31,20 +38,27 @@ val networkModule = module {
     }
 
     single { MovieApi(get()) }
-    single { ImageDownloadService(get()) } // Add this
+    single { ImageDownloadService(get()) }
 }
 
 val repositoryModule = module {
-    single<MovieRepository> { MovieRepositoryImpl(get()) }
+    single<MovieRepository> {
+        MovieRepositoryImpl(
+            movieApi = get(),
+            localDataSource = get(),
+            connectivityService = get()
+        )
+    }
 }
 
 val viewModelModule = module {
-    viewModel { MovieListViewModel(get()) }
-    viewModel { ImageDownloadViewModel(get()) } // Add this
+    viewModel { MovieListViewModel(get(), get()) }
+    viewModel { ImageDownloadViewModel(get()) }
 }
 
 val appModule = listOf(
-    platformModule(),
+    platformModule(), // Now includes database setup per platform
+    connectivityModule,
     networkModule,
     repositoryModule,
     viewModelModule

@@ -13,12 +13,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.brightlysoftware.brightlypoc.models.DownloadStatus
 import com.brightlysoftware.brightlypoc.viewmodel.ImageDownloadViewModel
 import org.koin.compose.koinInject
-import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 import com.brightlysoftware.brightlypoc.util.AppStartTimeTracker
 

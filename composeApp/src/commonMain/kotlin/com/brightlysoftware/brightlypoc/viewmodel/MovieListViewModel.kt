@@ -5,68 +5,84 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-//import com.example.movieapp.data.models.Movie
 import com.brightlysoftware.brightlypoc.models.MovieListUiState
 import com.brightlysoftware.brightlypoc.repository.MovieRepository
+import com.brightlysoftware.brightlypoc.util.NetworkConnectivityService
 import com.brightlysoftware.brightlypoc.util.Paginator
 import kotlinx.coroutines.launch
 
 class MovieListViewModel(
-    private val repository: MovieRepository
+    private val repository: MovieRepository,
+    private val connectivityService: NetworkConnectivityService
 ) : ViewModel() {
 
     var state by mutableStateOf(MovieListUiState())
         private set
-
     private val paginator = Paginator(
         initialKey = 1,
         onLoadUpdated = { isLoading ->
-            println("DEBUG: Pagination loading: $isLoading") // Debug log
             state = state.copy(isLoadingMore = isLoading)
         },
         onRequest = { page ->
-            println("DEBUG: Requesting page: $page") // Debug log
             repository.getPopularMovies(page)
                 .map { it.results }
         },
         getNextKey = { movies ->
-            val nextPage = state.currentPage + 1
-            println("DEBUG: Next page will be: $nextPage") // Debug log
-            nextPage
+            state.currentPage + 1
         },
         onError = { error ->
-            println("DEBUG: Pagination error: ${error?.message}") // Debug log
             state = state.copy(
                 error = error?.message ?: "Unknown error occurred",
                 isLoadingMore = false
             )
         },
         onSuccess = { movies, newPage ->
-            println("DEBUG: Success - Page: $newPage, Movies count: ${movies.size}")
-
+            val isOffline = repository.isOfflineMode()
             state = state.copy(
                 movies = if (state.currentPage == 1) {
-                    movies  // First page - replace
+                    movies // First page - replace
                 } else {
-                    state.movies + movies  // Append for subsequent pages
+                    state.movies + movies // Append for subsequent pages
                 },
                 currentPage = newPage,
-                isEndReached = movies.isEmpty(),
+                isEndReached = movies.isEmpty() || isOffline, // End pagination if offline
                 error = null,
-                isLoadingMore = false
+                isLoadingMore = false,
+                isOffline = isOffline,
+                isUsingCache = isOffline || movies.isEmpty()
             )
-
-            println("DEBUG: After update - Total movies: ${state.movies.size}")
         }
     )
-
     init {
-        loadInitialMovies()
+        viewModelScope.launch {
+            connectivityService.networkConnectionFlow
+//                .distinctUntilChanged()
+//                .debounce(800)
+                .collect { networkConnection ->
+                    val isOffline = (networkConnection == null)
+                    state = state.copy(isOffline = isOffline, networkConnection = networkConnection)
+                    if (!isOffline && state.movies.isEmpty()) {
+                        loadInitialMovies()
+                    }
+                }
+        }
     }
+//    init {
+//        viewModelScope.launch {
+//            connectivityService.isConnected
+//                .distinctUntilChanged()
+////                .debounce(800)  // helps reduce iOS rapid emissions
+//                .collect { connected ->
+//                    state = state.copy(isOffline = !connected)
+//                    if (connected && state.movies.isEmpty()) {
+//                        loadInitialMovies()
+//                    }
+//                }
+//        }
+//    }
 
     fun loadNextMovies() {
-        println("DEBUG: loadNextMovies called - Current state: isLoadingMore=${state.isLoadingMore}, isEndReached=${state.isEndReached}")
-        if (!state.isLoadingMore && !state.isEndReached) {
+        if (!state.isLoadingMore && !state.isEndReached && !state.isOffline) {
             viewModelScope.launch {
                 paginator.loadNextItems()
             }
@@ -77,6 +93,8 @@ class MovieListViewModel(
         state = state.copy(isLoading = true)
         viewModelScope.launch {
             try {
+                val isOffline = repository.isOfflineMode()
+                state = state.copy(isOffline = isOffline)
                 paginator.loadNextItems()
             } finally {
                 state = state.copy(isLoading = false)
@@ -94,5 +112,16 @@ class MovieListViewModel(
 
     fun clearError() {
         state = state.copy(error = null)
+    }
+
+    // Force refresh when back online
+    fun refreshWhenOnline() {
+        viewModelScope.launch {
+            if (!repository.isOfflineMode()) {
+                paginator.reset()
+                state = state.copy(movies = emptyList(), currentPage = 1)
+                loadInitialMovies()
+            }
+        }
     }
 }

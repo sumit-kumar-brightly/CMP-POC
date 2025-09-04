@@ -1,0 +1,75 @@
+-- Movies table for caching movie data
+CREATE TABLE Movie (
+    id INTEGER NOT NULL PRIMARY KEY,
+    adult INTEGER NOT NULL,
+    backdrop_path TEXT,
+    genre_ids TEXT NOT NULL, -- JSON array as string
+    original_language TEXT NOT NULL,
+    original_title TEXT NOT NULL,
+    overview TEXT NOT NULL,
+    popularity REAL NOT NULL,
+    poster_path TEXT,
+    release_date TEXT NOT NULL,
+    title TEXT NOT NULL,
+    video INTEGER NOT NULL,
+    vote_average REAL NOT NULL,
+    vote_count INTEGER NOT NULL,
+    page INTEGER NOT NULL, -- Track which page this movie came from
+    cached_at INTEGER NOT NULL, -- Timestamp when cached
+    is_favorite INTEGER NOT NULL DEFAULT 0 -- For future favorites feature
+);
+
+-- Index for efficient querying
+CREATE INDEX movie_page_idx ON Movie(page);
+CREATE INDEX movie_cached_at_idx ON Movie(cached_at);
+
+-- Cache metadata table
+CREATE TABLE CacheMetadata (
+    key TEXT NOT NULL PRIMARY KEY,
+    value TEXT NOT NULL,
+    updated_at INTEGER NOT NULL
+);
+
+-- Insert cache metadata
+INSERT OR REPLACE INTO CacheMetadata (key, value, updated_at)
+VALUES ('last_sync_timestamp', '0', 0);
+
+INSERT OR REPLACE INTO CacheMetadata (key, value, updated_at)
+VALUES ('total_pages', '0', 0);
+
+-- Queries for movies
+selectAllMovies:
+SELECT * FROM Movie ORDER BY page ASC, popularity DESC;
+
+selectMoviesByPage:
+SELECT * FROM Movie WHERE page = ? ORDER BY popularity DESC;
+
+selectMoviesCount:
+SELECT COUNT(*) FROM Movie;
+
+insertMovie:
+INSERT OR REPLACE INTO Movie (
+    id, adult, backdrop_path, genre_ids, original_language, original_title,
+    overview, popularity, poster_path, release_date, title, video,
+    vote_average, vote_count, page, cached_at, is_favorite
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+deleteMoviesByPage:
+DELETE FROM Movie WHERE page = ?;
+
+clearAllMovies:
+DELETE FROM Movie;
+
+deleteOldMovies:
+DELETE FROM Movie WHERE cached_at < ?;
+
+-- Queries for cache metadata
+selectCacheMetadata:
+SELECT * FROM CacheMetadata WHERE key = ?;
+
+insertCacheMetadata:
+INSERT OR REPLACE INTO CacheMetadata (key, value, updated_at) VALUES (?, ?, ?);
+
+-- Get movies for pagination (limit/offset)
+selectMoviesPaginated:
+SELECT * FROM Movie ORDER BY page ASC, popularity DESC LIMIT ? OFFSET ?;

@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -13,7 +14,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 import com.brightlysoftware.brightlypoc.viewmodel.MovieListViewModel
-import kotlinx.coroutines.flow.distinctUntilChanged
+import androidx.compose.material.icons.filled.CloudOff
+import androidx.compose.material.icons.filled.CloudDone
+import androidx.compose.ui.graphics.Color
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,46 +63,58 @@ fun MovieListScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    Text("Popular Movies")
+                title = { Text("Popular Movies") },
+                // NEW: Show offline indicator
+                actions = {
+                    NetworkBadge(isOffline = state.isOffline)
                 }
             )
         }
     ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            when {
-                // Initial loading state
-                state.isLoading && state.movies.isEmpty() -> {
-                    LoadingIndicator()
-                }
-
-                // Error state with empty list
-                state.error != null && state.movies.isEmpty() -> {
-                    ErrorState(
-                        error = state.error,
-                        onRetry = viewModel::retry
+        Column(modifier = Modifier.padding(paddingValues)) {
+            // NEW: Offline banner
+            if (state.isOffline && state.movies.isNotEmpty()) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer
                     )
-                }
-
-                // Success state or error with existing data
-                else -> {
-                    MovieList(
-                        movies = state.movies,
-                        isLoadingMore = state.isLoadingMore,
-                        listState = listState
+                ) {
+                    Text(
+                        "You're offline. Showing cached movies.",
+                        modifier = Modifier.padding(12.dp),
+                        style = MaterialTheme.typography.bodySmall
                     )
                 }
             }
 
-            // Error snackbar for pagination errors
-            state.error?.let { error ->
-                LaunchedEffect(error) {
-                    // Show error message as snackbar or handle it appropriately
-                    viewModel.clearError()
+            Box(modifier = Modifier.weight(1f)) {
+                when {
+                    // ... existing states ...
+                    state.isLoading && state.movies.isEmpty() -> {
+                        LoadingIndicator()
+                    }
+
+                    state.error != null && state.movies.isEmpty() -> {
+                        ErrorState(
+                            error = if (state.isOffline) {
+                                "No internet connection and no cached data available"
+                            } else {
+                                state.error
+                            },
+                            onRetry = viewModel::retry
+                        )
+                    }
+
+                    else -> {
+                        MovieList(
+                            movies = state.movies,
+                            isLoadingMore = state.isLoadingMore,
+                            listState = listState
+                        )
+                    }
                 }
             }
         }
@@ -141,6 +156,19 @@ private fun MovieList(
     }
 }
 
+@Composable
+private fun NetworkBadge(isOffline: Boolean) {
+    val icon = if (isOffline) Icons.Default.CloudOff else Icons.Default.CloudDone
+    val tint = if (isOffline) Color.Red else Color.Green
+    Icon(
+        imageVector = icon,
+        contentDescription = if (isOffline) "Offline" else "Online",
+        tint = tint,
+        modifier = Modifier
+            .padding(end = 16.dp)
+            .size(20.dp)
+    )
+}
 @Composable
 private fun LoadingIndicator(
     modifier: Modifier = Modifier
