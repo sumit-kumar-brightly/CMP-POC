@@ -16,6 +16,7 @@ kotlinx-datetime = "0.6.0"
 sqlDelight = "2.1.0"
 konnection = "1.4.5"
 settings = "1.2.0"
+charts = "2.0.6"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -54,6 +55,7 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 konnection = { module = "dev.tmapps:konnection", version.ref = "konnection" }
 # Settings for storing preferences
 multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", version.ref = "settings" }
+cmp-charts = { module = "network.chaintech:cmpcharts", version.ref = "charts" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

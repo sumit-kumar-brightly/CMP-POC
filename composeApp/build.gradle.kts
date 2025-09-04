@@ -42,6 +42,7 @@ kotlin {
 //            implementation(libs.androidx.core.splashscreen)
         }
         commonMain.dependencies {
+
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
@@ -56,6 +57,7 @@ kotlin {
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
+
 
             // Serialization
             implementation(libs.kotlinx.serialization.json)
@@ -75,6 +77,7 @@ kotlin {
             implementation(libs.sqldelight.coroutines)
             implementation(libs.multiplatform.settings)
             implementation(libs.konnection)
+            implementation(libs.cmp.charts)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

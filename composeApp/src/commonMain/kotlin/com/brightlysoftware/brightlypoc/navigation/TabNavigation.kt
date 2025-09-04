@@ -6,19 +6,22 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.Movie
+import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.brightlysoftware.brightlypoc.ui.ImageDownloadScreen
 import com.brightlysoftware.brightlypoc.ui.MovieListScreen
+import com.brightlysoftware.brightlypoc.ui.ChartScreen
 
 enum class AppTab(
     val title: String,
     val icon: ImageVector
 ) {
-    Movies("Movies", Icons.Default.Movie),
-    Download("Download", Icons.Default.CloudDownload)
+    Movies("Home", Icons.Default.Movie),
+    Download("Download", Icons.Default.CloudDownload),
+    ChartScreen("DashBoard", Icons.Rounded.Menu)
 }
 
 @Composable
@@ -31,6 +34,7 @@ fun TabNavigation() {
             when (selectedTab) {
                 AppTab.Movies -> MovieListScreen()
                 AppTab.Download -> ImageDownloadScreen()
+                AppTab.ChartScreen -> ChartScreen()
             }
         }
 
