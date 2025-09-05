@@ -16,6 +16,8 @@ import kotlinx.serialization.json.Json
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
+import io.ktor.client.plugins.logging.*
+import io.ktor.client.plugins.observer.ResponseObserver
 
 expect fun platformModule(): Module
 
@@ -33,6 +35,16 @@ val networkModule = module {
                     coerceInputValues = true
                     isLenient = true
                 })
+            }
+            install(Logging) {
+                logger = Logger.DEFAULT
+                level = LogLevel.INFO
+            }
+            install(ResponseObserver) {
+                onResponse { response ->
+                    val latencyMs = response.responseTime.timestamp - response.requestTime.timestamp
+                    println("HTTP ${response.call}: Latency = $latencyMs ms")
+                }
             }
         }
     }
