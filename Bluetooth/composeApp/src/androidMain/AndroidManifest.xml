@@ -1,0 +1,79 @@
+
+<!--<manifest xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--          package="com.example.bluetoothdemo">-->
+
+<!--    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />-->
+<!--    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />-->
+<!--    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" android:maxSdkVersion="30"/>-->
+<!--    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" android:maxSdkVersion="30"/>-->
+
+<!--    <application android:label="CMP Bluetooth POC">-->
+<!--        <activity-->
+<!--                android:name="com.example.bluetoothdemo.MainActivity"-->
+<!--                android:exported="true">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN"/>-->
+<!--                <category android:name="android.intent.category.LAUNCHER"/>-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
+<!--    </application>-->
+<!--</manifest>-->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.example.bluetoothdemo">
+
+    <!-- Android 12+ runtime-scoped Bluetooth permissions -->
+    <uses-permission
+            android:name="android.permission.BLUETOOTH_SCAN"
+            android:usesPermissionFlags="neverForLocation" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+
+    <!-- Pre-Android 12 scanning needs location -->
+    <uses-permission
+            android:name="android.permission.ACCESS_FINE_LOCATION"
+            android:maxSdkVersion="30" />
+    <uses-permission
+            android:name="android.permission.ACCESS_COARSE_LOCATION"
+            android:maxSdkVersion="30" />
+    <!-- Pre-Android 12 install-time permissions (required!) -->
+    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30"/>
+
+    <application android:label="CMP Bluetooth POC">
+        <activity
+                android:name="com.example.bluetoothdemo.MainActivity"
+                android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
+
+<!--<manifest xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--          package="com.example.bluetoothdemo">-->
+
+<!--    &lt;!&ndash; Android 12+ runtime permissions &ndash;&gt;-->
+<!--    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />-->
+<!--    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />-->
+
+<!--    &lt;!&ndash; Location needed for BLE scanning on Android 11 and below &ndash;&gt;-->
+<!--    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" android:maxSdkVersion="30" />-->
+<!--    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" android:maxSdkVersion="30" />-->
+
+<!--    &lt;!&ndash; Pre-Android 12 install-time Bluetooth permissions &ndash;&gt;-->
+<!--    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />-->
+<!--    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />-->
+
+<!--    <application android:label="CMP Bluetooth POC">-->
+<!--        <activity-->
+<!--                android:name="com.example.bluetoothdemo.MainActivity"-->
+<!--                android:exported="true">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN"/>-->
+<!--                <category android:name="android.intent.category.LAUNCHER"/>-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
+<!--    </application>-->
+<!--</manifest>-->
