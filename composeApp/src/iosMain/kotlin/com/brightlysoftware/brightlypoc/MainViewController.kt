@@ -12,12 +12,14 @@ private val initAppStart: Unit = run {
     AppStartTimeTracker.recordAppStart(IosAppStartTime.startTime)
 }
 fun MainViewController() = ComposeUIViewController {
-    startKoin {
-        modules(appModule)
-    }
+//    startKoin {
+//        modules(appModule)
+//    }
     // Record UI ready time when Compose starts
     LaunchedEffect(Unit) {
         AppStartTimeTracker.recordUiReady()
+        initializePendo()
+        startPendoSession("bdf640fa-f270-4861-b297-1db8718f2943", accountId = "ACME")
     }
     App()
 }

@@ -30,6 +30,25 @@ kotlin {
         }
     }
 
+//    cocoapods {
+//        homepage = "My Homepage"
+//        summary = "My Description"
+//        version = "1.16.2"
+//        ios.deploymentTarget = "17.0"
+//        podfile = project.file("../iosApp/Podfile")
+//
+//        framework {
+//            baseName = "composeApp"
+//            compilerOptions.optIn.add("-Xbinary=bundleId=com.brightlysoftware.platform-mobile-mme")
+//            isStatic = true
+//        }
+//
+//        pod("Pendo") {
+//            version = "3.8.0.9901"
+//            extraOpts += listOf("-compiler-option", "-fmodules")
+//        }
+//    }
+
     sourceSets {
         androidMain.dependencies {
             implementation(compose.preview)
@@ -38,7 +57,7 @@ kotlin {
             implementation(libs.koin.android)
             implementation(libs.ktor.client.okhttp)
             implementation(libs.sqldelight.android.driver)
-
+            implementation(libs.pendo.android)
 //            implementation(libs.androidx.core.splashscreen)
         }
         commonMain.dependencies {
@@ -52,6 +71,10 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(compose.materialIconsExtended)
+//            implementation(libs.androidx.lifecycle.viewmodelSavedState)
+            implementation(libs.androidx.navigation.compose)
+//            implementation(libs.androidx.savedstate)
+
             implementation(libs.kotlinx.datetime)
             // Networking
             implementation(libs.ktor.client.core)

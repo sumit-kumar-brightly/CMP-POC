@@ -4,5 +4,18 @@
 <dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>pendo-pairing</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>pendo-6720c954</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

@@ -11,9 +11,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.brightlysoftware.brightlypoc.analytics.PendoAnalytics
+import com.brightlysoftware.brightlypoc.analytics.pendoTag
 import com.brightlysoftware.brightlypoc.ui.ImageDownloadScreen
 import com.brightlysoftware.brightlypoc.ui.MovieListScreen
 import com.brightlysoftware.brightlypoc.ui.ChartScreen
+import com.brightlysoftware.brightlypoc.analytics.trackScreenView
+import com.brightlysoftware.brightlypoc.analytics.trackEvent
+import org.koin.compose.koinInject
 
 enum class AppTab(
     val title: String,
@@ -25,9 +30,22 @@ enum class AppTab(
 }
 
 @Composable
-fun TabNavigation() {
-    var selectedTab by remember { mutableStateOf(AppTab.Movies) }
+expect fun SetupPendoNavigation()
 
+@Composable
+fun TabNavigation() {
+    SetupPendoNavigation()
+    val pendoAnalytics = koinInject<PendoAnalytics>()
+    var selectedTab by remember { mutableStateOf(AppTab.Movies) }
+    LaunchedEffect(selectedTab) {
+        pendoAnalytics.trackScreen(
+            screenName = selectedTab.title,
+            properties = mapOf(
+                "tab_index" to selectedTab.ordinal.toString(),
+                "tab_name" to selectedTab.name
+            )
+        )
+    }
     Column(modifier = Modifier.fillMaxWidth()) {
         // Content first
         Box(modifier = Modifier.weight(1f)) {
@@ -42,13 +60,26 @@ fun TabNavigation() {
         TabRow(
             selectedTabIndex = selectedTab.ordinal,
             modifier = Modifier.fillMaxWidth()
+                .pendoTag("bottom_tab_bar")
         ) {
             AppTab.entries.forEach { tab ->
                 Tab(
                     selected = selectedTab == tab,
-                    onClick = { selectedTab = tab },
+                    onClick =
+                        {
+                           selectedTab = tab
+                            pendoAnalytics.trackEvent(
+                              "tab_clicked",
+                              mapOf(
+                                  "tab_name" to tab.name,
+                                  "previous_tab" to selectedTab.name
+                             )
+                           )
+                        },
+
                     text = { Text(tab.title) },
-                    icon = { Icon(tab.icon, contentDescription = tab.title) }
+                    icon = { Icon(tab.icon, contentDescription = tab.title) },
+                    modifier = Modifier.pendoTag("tab_${tab.name.lowercase()}")
                 )
             }
         }

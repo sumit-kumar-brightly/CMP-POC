@@ -8,6 +8,8 @@ import com.brightlysoftware.brightlypoc.data.local.DatabaseDriverFactory
 import com.brightlysoftware.brightlypoc.data.local.MovieLocalDataSource
 import com.brightlysoftware.brightlypoc.database.MovieDatabase
 import com.brightlysoftware.brightlypoc.util.NetworkConnectivityService
+import com.brightlysoftware.brightlypoc.analytics.AndroidPendoAnalytics
+import com.brightlysoftware.brightlypoc.analytics.PendoAnalytics
 
 actual fun platformModule() = module {
     single<HttpClientEngine> { OkHttp.create() }
@@ -20,4 +22,5 @@ actual fun platformModule() = module {
         MovieDatabase(driver)
     }
     single { MovieLocalDataSource(get()) }
+    single<PendoAnalytics> { AndroidPendoAnalytics() }
 }

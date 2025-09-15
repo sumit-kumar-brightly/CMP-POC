@@ -25,6 +25,7 @@ dependencyResolutionManagement {
             }
         }
         mavenCentral()
+        maven { url = uri("https://software.mobile.pendo.io/artifactory/androidx-release") }
     }
 }
 
